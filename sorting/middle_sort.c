@@ -1,10 +1,18 @@
+/**
+ * @file
+ * @brief Implementation of custom [middle sort] algorithm
+ */
 
-#include <time.h> //for random testing numbers
-#include <assert.h> //for assert testing
-#include <stdlib.h> //for rand()
+#include <assert.h>  //for assert testing
+#include <stdlib.h>  //for rand()
+#include <time.h>    //for random testing numbers
 
 /**
- *  @brief Moves elements in array one to the right, 
+ * @addtogroup sorting Sorting algorithms
+ * @{
+ */
+/**
+ *  @brief Moves elements in array one to the right,
  *  overriding the element to the right and leaving
  *  a copy of the first element. Returns replaced int
  *  @param Array array to be sorted
@@ -17,13 +25,13 @@ int moveRight(int Array[], int startIndex, int endIndex)
     int erasedInteger = Array[endIndex];
     for (int index = endIndex; index >= startIndex; --index)
     {
-        Array[index] = Array[index-1];   
-    }   
+        Array[index] = Array[index - 1];
+    }
     return erasedInteger;
 }
 
 /**
- *  @brief Moves elements in array one to the left, 
+ *  @brief Moves elements in array one to the left,
  *  overriding the element to the left and leaving
  *  a copy of the first element. Returns replaced int
  *  @param Array array to be sorted
@@ -36,8 +44,8 @@ int moveLeft(int Array[], int startIndex, int endIndex)
     int erasedInteger = Array[endIndex];
     for (int index = startIndex; index <= endIndex; ++index)
     {
-        Array[index] = Array[index+1];   
-    }   
+        Array[index] = Array[index + 1];
+    }
     return erasedInteger;
 }
 
@@ -49,15 +57,16 @@ int moveLeft(int Array[], int startIndex, int endIndex)
  *  @returns [int] position of element or where it should be if not in array
  */
 int binarySearchToFindPosition(int array[], int element,
-        int sortedListStartIndex, int sortedListEndIndex)
+                               int sortedListStartIndex, int sortedListEndIndex)
 {
     int low = sortedListStartIndex;
     int max = sortedListEndIndex;
     int mid = (max - low) / 2 + low;
-    
-    //loops through elements until it finds either the same element or
-    //it finds the two elements it should be between and returns index of larger one
-    while ( !(element >= array[mid-1] && element <= array[mid]) )
+
+    // loops through elements until it finds either the same element or
+    // it finds the two elements it should be between and returns index of
+    // larger one
+    while (!(element >= array[mid - 1] && element <= array[mid]))
     {
         mid = (max - low) / 2 + low;
         if (element > array[mid])
@@ -72,13 +81,12 @@ int binarySearchToFindPosition(int array[], int element,
         {
             return mid;
         }
-        
     }
     return mid;
 }
 
 /**
- *  @brief Sorting algorithm that starts with 
+ *  @brief Sorting algorithm that starts with
  *  middle elements and sorts out from the center
  *  @param Array Array that is to be sorted
  *  @param sizeOfArray size of array
@@ -86,15 +94,15 @@ int binarySearchToFindPosition(int array[], int element,
 void MiddleSort(int Array[], int sizeOfArray)
 {
     int currentSortedSize = (sizeOfArray % 2 == 0) ? 1 : 0;
-    
+
     int startIndex = (sizeOfArray / 2) - currentSortedSize;
     int endIndex = startIndex + currentSortedSize;
-    
+
     int replacePosition;
     int currentLarge;
     int currentLow;
 
-    //create initial state with sorted one or two elements
+    // create initial state with sorted one or two elements
     if (Array[startIndex] > Array[endIndex])
     {
         currentLarge = Array[startIndex];
@@ -106,18 +114,17 @@ void MiddleSort(int Array[], int sizeOfArray)
         currentLarge = Array[endIndex];
     }
 
-    //set array preloop state
+    // set array preloop state
     Array[startIndex] = currentLow;
     Array[endIndex] = currentLarge;
 
     startIndex -= 1;
     endIndex += 1;
 
-    //loop until end of array is passed
+    // loop until end of array is passed
     while (startIndex >= 0 && endIndex < sizeOfArray)
     {
-
-        //checks which of the two picks is larger/smaller
+        // checks which of the two picks is larger/smaller
         if (Array[startIndex] > Array[endIndex])
         {
             currentLarge = Array[startIndex];
@@ -129,17 +136,17 @@ void MiddleSort(int Array[], int sizeOfArray)
             currentLarge = Array[endIndex];
         }
 
-        //if block to determine how elements are moved around and places
-            //if low is lowest
-        if (currentLow < Array[startIndex+1])
+        // if block to determine how elements are moved around and placed
+        // if low is lowest
+        if (currentLow < Array[startIndex + 1])
         {
             Array[startIndex] = currentLow;
 
-            //check where largeest should go
-            if (currentLarge < Array[endIndex-1])
+            // check where largeest should go
+            if (currentLarge < Array[endIndex - 1])
             {
-                replacePosition = binarySearchToFindPosition(Array, currentLarge,
-                                  startIndex, endIndex-1);
+                replacePosition = binarySearchToFindPosition(
+                    Array, currentLarge, startIndex, endIndex - 1);
                 moveRight(Array, replacePosition, endIndex);
                 Array[replacePosition] = currentLarge;
             }
@@ -148,41 +155,40 @@ void MiddleSort(int Array[], int sizeOfArray)
                 Array[endIndex] = currentLarge;
             }
         }
-        //if the lowest and larger are the biggest so far
-        else if (currentLow > Array[endIndex-1])
+        // if the lowest and larger are the biggest so far
+        else if (currentLow > Array[endIndex - 1])
         {
-            moveLeft(Array, startIndex, endIndex-1);
-            Array[endIndex-1] = currentLow;
+            moveLeft(Array, startIndex, endIndex - 1);
+            Array[endIndex - 1] = currentLow;
             Array[endIndex] = currentLarge;
         }
-        //if low tested value is not the largest or smallest
+        // if low tested value is not the largest or smallest
         else
         {
-            replacePosition = binarySearchToFindPosition(Array, currentLow,
-                              startIndex+1, endIndex-1);
-            moveLeft(Array, startIndex, replacePosition-1);
-            Array[replacePosition-1] = currentLow;
+            replacePosition = binarySearchToFindPosition(
+                Array, currentLow, startIndex + 1, endIndex - 1);
+            moveLeft(Array, startIndex, replacePosition - 1);
+            Array[replacePosition - 1] = currentLow;
 
-            //check where largest should go, either at end or in sorted list
-            if (currentLarge < Array[endIndex-1])
+            // check where largest should go, either at end or in sorted list
+            if (currentLarge < Array[endIndex - 1])
             {
-                replacePosition = binarySearchToFindPosition(Array, currentLarge,
-                                startIndex, endIndex-1);
+                replacePosition = binarySearchToFindPosition(
+                    Array, currentLarge, startIndex, endIndex - 1);
                 moveRight(Array, replacePosition, endIndex);
-                Array[replacePosition] = currentLarge; 
+                Array[replacePosition] = currentLarge;
             }
             else
             {
                 Array[endIndex] = currentLarge;
             }
         }
-        
-        //increment sorted array
+
         --startIndex;
         ++endIndex;
     }
 }
-
+/** @} */
 
 /**
  * @brief tests sorting middle sort algorithm
@@ -200,7 +206,7 @@ static void test(int array[], int arraySize)
 
     for (int index = 1; index < arraySize; ++index)
     {
-        assert(array[index-1] <= array[index]);
+        assert(array[index - 1] <= array[index]);
     }
 }
 
